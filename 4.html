@@ -1,0 +1,1317 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>知食物语 - 游戏化智能健康饮食平台</title>
+    <style>
+        /* 全局重置与基础样式 */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Press Start 2P', 'Microsoft YaHei', sans-serif;
+        }
+        body {
+            background-color: #f5f7fa;
+            color: #2d2d2d;
+            line-height: 1.6;
+            overflow-x: hidden;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20"><rect width="2" height="2" fill="%23e8f4f8" x="0" y="0"/><rect width="2" height="2" fill="%23e8f4f8" x="4" y="4"/><rect width="2" height="2" fill="%23e8f4f8" x="8" y="8"/><rect width="2" height="2" fill="%23e8f4f8" x="12" y="12"/><rect width="2" height="2" fill="%23e8f4f8" x="16" y="16"/></svg>');
+        }
+        .container {
+            width: 1280px;
+            margin: 0 auto;
+            padding: 0 30px;
+        }
+        /* 像素风组件基础样式 */
+        .pixel-border {
+            border: 4px solid #2d2d2d;
+            box-shadow: 6px 6px 0 #000;
+            border-radius: 2px;
+        }
+        .pixel-btn {
+            display: inline-block;
+            padding: 14px 28px;
+            background-color: #7CCD7C;
+            color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 2px;
+            text-decoration: none;
+            font-size: 16px;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+            box-shadow: 4px 4px 0 #2d2d2d;
+            text-align: center;
+        }
+        .pixel-btn:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 8px 8px 0 #2d2d2d;
+        }
+        .pixel-btn:active {
+            transform: translate(2px, 2px);
+            box-shadow: 2px 2px 0 #2d2d2d;
+        }
+        .pixel-btn--orange {
+            background-color: #FF7F50;
+        }
+        .pixel-btn--black {
+            background-color: #2d2d2d;
+        }
+        .section-title {
+            text-align: center;
+            margin: 80px 0 50px;
+            font-size: 32px;
+            color: #2d2d2d;
+            text-shadow: 4px 4px 0 #e8f4f8;
+            letter-spacing: 3px;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 120px;
+            height: 6px;
+            background-color: #FF7F50;
+            margin: 15px auto 0;
+            border: 2px solid #2d2d2d;
+        }
+        /* 导航栏样式 */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background-color: #fff;
+            border-bottom: 4px solid #2d2d2d;
+            padding: 18px 0;
+            z-index: 9999;
+            box-shadow: 0 4px 0 #e0e0e0;
+        }
+        .navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+        .logo-img {
+            width: 56px;
+            height: 56px;
+            background-color: #FF7F50;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 22px;
+            box-shadow: 3px 3px 0 #2d2d2d;
+        }
+        .logo-text {
+            font-size: 26px;
+            color: #2d2d2d;
+            text-shadow: 2px 2px 0 #e8f4f8;
+        }
+        .nav-menu {
+            display: flex;
+            gap: 40px;
+        }
+        .nav-item a {
+            text-decoration: none;
+            color: #2d2d2d;
+            font-size: 16px;
+            padding: 8px 14px;
+            border-radius: 2px;
+            transition: all 0.2s;
+            position: relative;
+        }
+        .nav-item a::after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 0;
+            height: 3px;
+            background-color: #7CCD7C;
+            transition: width 0.3s;
+        }
+        .nav-item a:hover {
+            background-color: #f0f8fb;
+            border: 2px solid #2d2d2d;
+        }
+        .nav-item a:hover::after {
+            width: 100%;
+        }
+        .nav-tools {
+            display: flex;
+            align-items: center;
+            gap: 25px;
+        }
+        .search-box {
+            padding: 10px 16px;
+            border: 3px solid #2d2d2d;
+            border-radius: 2px;
+            font-size: 14px;
+            width: 240px;
+            background-color: #f9f9f9;
+            box-shadow: inset 2px 2px 0 #e0e0e0;
+        }
+        .search-box:focus {
+            outline: none;
+            box-shadow: inset 2px 2px 0 #7CCD7C;
+        }
+        .cart-icon {
+            position: relative;
+            font-size: 28px;
+            cursor: pointer;
+            color: #2d2d2d;
+            transition: transform 0.2s;
+        }
+        .cart-icon:hover {
+            transform: scale(1.1);
+        }
+        .cart-count {
+            position: absolute;
+            top: -12px;
+            right: -12px;
+            background-color: #FF7F50;
+            color: #fff;
+            font-size: 14px;
+            width: 26px;
+            height: 26px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 3px solid #2d2d2d;
+            box-shadow: 2px 2px 0 #2d2d2d;
+        }
+        /* 英雄区样式（核心视觉升级） */
+        .hero {
+            margin-top: 120px;
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            padding: 100px 0;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 8px 8px 0 #e8f4f8;
+        }
+        /* 像素风动态背景元素 */
+        .hero::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 40 40"><rect width="4" height="4" fill="%23e8f4f8" x="5" y="10"/><rect width="4" height="4" fill="%23e8f4f8" x="15" y="20"/><rect width="4" height="4" fill="%23e8f4f8" x="25" y="5"/><rect width="4" height="4" fill="%23e8f4f8" x="30" y="30"/></svg>');
+            opacity: 0.6;
+            z-index: 1;
+        }
+        /* 像素角色装饰 */
+        .pixel-character {
+            position: absolute;
+            width: 120px;
+            height: 160px;
+            z-index: 2;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="120" height="160" viewBox="0 0 120 160"><rect width="30" height="10" fill="%23FF7F50" x="45" y="20"/><rect width="50" height="60" fill="%237CCD7C" x="35" y="30"/><rect width="20" height="40" fill="%232d2d2d" x="25" y="90"/><rect width="20" height="40" fill="%232d2d2d" x="75" y="90"/><rect width="10" height="30" fill="%23FFD700" x="55" y="130"/></svg>');
+        }
+        .character-left {
+            top: 50%;
+            left: 8%;
+            transform: translateY(-50%);
+        }
+        .character-right {
+            top: 50%;
+            right: 8%;
+            transform: translateY(-50%) scaleX(-1);
+        }
+        .hero-content {
+            position: relative;
+            z-index: 3;
+            text-align: center;
+            max-width: 900px;
+            margin: 0 auto;
+        }
+        .hero-title {
+            font-size: 48px;
+            margin-bottom: 30px;
+            color: #2d2d2d;
+            text-shadow: 5px 5px 0 #7CCD7C;
+            line-height: 1.3;
+        }
+        .hero-subtitle {
+            font-size: 20px;
+            margin-bottom: 50px;
+            color: #4a4a4a;
+            line-height: 1.8;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        .hero-btns {
+            display: flex;
+            justify-content: center;
+            gap: 30px;
+            flex-wrap: wrap;
+        }
+        .hero-tag-container {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            z-index: 3;
+        }
+        .hero-tag {
+            background-color: #FF7F50;
+            color: #fff;
+            padding: 10px 20px;
+            border: 3px solid #2d2d2d;
+            border-radius: 2px;
+            font-size: 14px;
+            transform: rotate(6deg);
+            box-shadow: 3px 3px 0 #2d2d2d;
+            margin-bottom: 15px;
+            display: inline-block;
+        }
+        /* 核心功能区（网格规整+hover效果升级） */
+        .features {
+            padding: 100px 0;
+        }
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 50px;
+        }
+        .feature-card {
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            padding: 40px 30px;
+            text-align: center;
+            box-shadow: 6px 6px 0 #e8f4f8;
+            transition: all 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            position: relative;
+            overflow: hidden;
+        }
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #7CCD7C;
+        }
+        .feature-card:hover {
+            transform: translateY(-15px);
+            box-shadow: 10px 10px 0 #7CCD7C;
+        }
+        .feature-icon {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 30px;
+            background-color: #f0f8fb;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 40px;
+            color: #2d2d2d;
+            box-shadow: 3px 3px 0 #e0e0e0;
+        }
+        .feature-title {
+            font-size: 24px;
+            margin-bottom: 20px;
+            color: #2d2d2d;
+            text-shadow: 2px 2px 0 #e8f4f8;
+        }
+        .feature-desc {
+            font-size: 16px;
+            color: #4a4a4a;
+            margin-bottom: 35px;
+            line-height: 1.7;
+            min-height: 80px;
+        }
+        .feature-card .pixel-btn {
+            width: 100%;
+        }
+        /* 助农专区（沉浸式场景+细节强化） */
+        .farmer {
+            background-color: #faf6ed;
+            border-top: 4px solid #2d2d2d;
+            border-bottom: 4px solid #2d2d2d;
+            padding: 100px 0;
+            position: relative;
+        }
+        .farmer::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="60" height="60" viewBox="0 0 60 60"><rect width="6" height="6" fill="%23f5e6d3" x="10" y="20"/><rect width="6" height="6" fill="%23f5e6d3" x="25" y="35"/><rect width="6" height="6" fill="%23f5e6d3" x="40" y="15"/><rect width="6" height="6" fill="%23f5e6d3" x="30" y="50"/></svg>');
+            opacity: 0.4;
+            z-index: 1;
+        }
+        .farmer-content {
+            position: relative;
+            z-index: 2;
+        }
+        .farmer-banner {
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            padding: 40px;
+            margin-bottom: 60px;
+            text-align: center;
+            box-shadow: 6px 6px 0 #e0d4c3;
+        }
+        .farmer-title {
+            font-size: 28px;
+            margin-bottom: 20px;
+            color: #2d2d2d;
+            text-shadow: 3px 3px 0 #f5e6d3;
+        }
+        .farmer-desc {
+            font-size: 18px;
+            color: #4a4a4a;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        .farmer-grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 50px;
+        }
+        .price-table {
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: 6px 6px 0 #e0d4c3;
+        }
+        .price-table th, .price-table td {
+            border: 3px solid #2d2d2d;
+            padding: 15px;
+            text-align: center;
+            font-size: 16px;
+        }
+        .price-table th {
+            background-color: #f5e6d3;
+            font-weight: bold;
+        }
+        .price-table tr:nth-child(even) {
+            background-color: #f9f5f0;
+        }
+        .farmer-stories {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 30px;
+        }
+        .farmer-story {
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            padding: 25px;
+            display: flex;
+            align-items: center;
+            gap: 20px;
+            box-shadow: 4px 4px 0 #e0d4c3;
+            transition: all 0.2s;
+        }
+        .farmer-story:hover {
+            transform: translate(-5px, -5px);
+            box-shadow: 8px 8px 0 #e0d4c3;
+        }
+        .farmer-avatar {
+            width: 80px;
+            height: 80px;
+            background-color: #7CCD7C;
+            border: 4px solid #2d2d2d;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 32px;
+            box-shadow: 3px 3px 0 #2d2d2d;
+        }
+        .farmer-story-content h4 {
+            font-size: 20px;
+            margin-bottom: 10px;
+            color: #2d2d2d;
+        }
+        .farmer-story-content p {
+            font-size: 16px;
+            color: #4a4a4a;
+            line-height: 1.6;
+        }
+        .farmer-cta {
+            text-align: center;
+            margin-top: 60px;
+        }
+        /* 游戏化互动区（视觉强化+进度可视化） */
+        .game {
+            padding: 100px 0;
+        }
+        .game-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 50px;
+        }
+        .game-card {
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            padding: 40px 30px;
+            box-shadow: 6px 6px 0 #e8f4f8;
+            position: relative;
+            overflow: hidden;
+        }
+        .game-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 8px;
+            background-color: #FF7F50;
+        }
+        .game-card-title {
+            font-size: 24px;
+            margin-bottom: 30px;
+            color: #2d2d2d;
+            text-align: center;
+            text-shadow: 2px 2px 0 #e8f4f8;
+        }
+        .game-level {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+            text-align: center;
+        }
+        .game-level span {
+            color: #FF7F50;
+            font-weight: bold;
+        }
+        .game-progress {
+            height: 24px;
+            background-color: #f0f0f0;
+            border: 3px solid #2d2d2d;
+            border-radius: 12px;
+            margin: 20px 0;
+            overflow: hidden;
+            box-shadow: inset 2px 2px 0 #e0e0e0;
+        }
+        .progress-bar {
+            height: 100%;
+            background-color: #FF7F50;
+            width: 30%;
+            transition: width 0.5s ease-in-out;
+            box-shadow: 2px 0 0 #cc6640;
+        }
+        .progress-text {
+            font-size: 14px;
+            color: #666;
+            text-align: center;
+            margin-bottom: 30px;
+        }
+        .game-task {
+            margin-bottom: 20px;
+            font-size: 16px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            padding: 10px;
+            border-radius: 4px;
+            transition: background-color 0.2s;
+        }
+        .game-task:hover {
+            background-color: #f9f9f9;
+        }
+        .task-checkbox {
+            width: 26px;
+            height: 26px;
+            border: 3px solid #2d2d2d;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            background-color: #f0f0f0;
+            transition: all 0.2s;
+        }
+        .task-checkbox:hover {
+            background-color: #e8f4f8;
+        }
+        .task-checked {
+            background-color: #7CCD7C;
+            color: #fff;
+            box-shadow: inset 2px 2px 0 #5cb85c;
+        }
+        .album-grid {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .album-item {
+            border: 3px solid #2d2d2d;
+            border-radius: 4px;
+            padding: 15px;
+            text-align: center;
+            background-color: #f0f8fb;
+            transition: all 0.2s;
+        }
+        .album-item.unlocked {
+            background-color: #e8f4f8;
+            box-shadow: 3px 3px 0 #7CCD7C;
+        }
+        .album-item.locked {
+            background-color: #f0f0f0;
+            border: 3px dashed #999;
+            color: #999;
+        }
+        .album-icon {
+            font-size: 32px;
+            margin-bottom: 8px;
+        }
+        .album-name {
+            font-size: 14px;
+        }
+        .game-cta {
+            text-align: center;
+            margin-top: 30px;
+        }
+        /* 套餐推荐区（标签优化+卡片分层） */
+        .packages {
+            background-color: #f9f9f9;
+            border-top: 4px solid #2d2d2d;
+            padding: 100px 0;
+        }
+        .package-tabs {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            margin-bottom: 60px;
+            flex-wrap: wrap;
+        }
+        .package-tab {
+            padding: 12px 24px;
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 3px 3px 0 #e0e0e0;
+        }
+        .package-tab:hover {
+            transform: translate(-3px, -3px);
+            box-shadow: 6px 6px 0 #e0e0e0;
+        }
+        .package-tab.active {
+            background-color: #7CCD7C;
+            color: #fff;
+            box-shadow: 6px 6px 0 #2d2d2d;
+        }
+        .package-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 40px;
+        }
+        .package-card {
+            background-color: #fff;
+            border: 4px solid #2d2d2d;
+            border-radius: 4px;
+            padding: 30px;
+            box-shadow: 6px 6px 0 #e0e0e0;
+            transition: all 0.3s;
+            position: relative;
+            overflow: hidden;
+        }
+        .package-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 10px 10px 0 #e0e0e0;
+        }
+        .package-card.hot::before {
+            content: 'HOT';
+            position: absolute;
+            top: -10px;
+            right: -10px;
+            background-color: #FF7F50;
+            color: #fff;
+            padding: 8px 20px;
+            border: 3px solid #2d2d2d;
+            font-size: 14px;
+            transform: rotate(45deg);
+            box-shadow: 2px 2px 0 #2d2d2d;
+        }
+        .package-img {
+            width: 100%;
+            height: 220px;
+            background-color: #f0f8fb;
+            border: 3px solid #2d2d2d;
+            border-radius: 4px;
+            margin-bottom: 25px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            color: #4a4a4a;
+            box-shadow: inset 3px 3px 0 #e8f4f8;
+            background-image: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="80" height="80" viewBox="0 0 80 80"><rect width="10" height="10" fill="%237CCD7C" x="20" y="30" opacity="0.3"/><rect width="10" height="10" fill="%23FF7F50" x="40" y="40" opacity="0.3"/><rect width="10" height="10" fill="%23FFD700" x="30" y="60" opacity="0.3"/></svg>');
+        }
+        .package-name {
+            font-size: 24px;
+            margin-bottom: 15px;
+            color: #2d2d2d;
+            text-shadow: 2px 2px 0 #f0f0f0;
+        }
+        .package-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 25px;
+        }
+        .package-tag {
+            background-color: #f0f8fb;
+            border: 2px solid #2d2d2d;
+            padding: 6px 12px;
+            font-size: 14px;
+            border-radius: 4px;
+            box-shadow: 2px 2px 0 #e8f4f8;
+        }
+        .package-price {
+            font-size: 28px;
+            color: #FF7F50;
+            margin-bottom: 25px;
+            font-weight: bold;
+            text-align: center;
+        }
+        .package-card .pixel-btn {
+            width: 100%;
+        }
+        .package-membership {
+            text-align: center;
+            margin-top: 60px;
+        }
+        .membership-desc {
+            font-size: 18px;
+            margin-bottom: 20px;
+            color: #4a4a4a;
+        }
+        /* 底部样式（结构规整+视觉统一） */
+        .footer {
+            background-color: #2d2d2d;
+            color: #fff;
+            padding: 80px 0 40px;
+            border-top: 6px solid #FF7F50;
+        }
+        .footer-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr 1fr;
+            gap: 60px;
+            margin-bottom: 60px;
+        }
+        .footer-col {
+            display: flex;
+            flex-direction: column;
+        }
+        .footer-logo {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 30px;
+        }
+        .footer-logo-img {
+            width: 50px;
+            height: 50px;
+            background-color: #FF7F50;
+            border: 4px solid #fff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 20px;
+            box-shadow: 3px 3px 0 #000;
+        }
+        .footer-logo-text {
+            font-size: 26px;
+            color: #fff;
+        }
+        .footer-desc {
+            font-size: 16px;
+            color: #ccc;
+            line-height: 1.8;
+            margin-bottom: 30px;
+        }
+        .footer-title {
+            font-size: 22px;
+            margin-bottom: 30px;
+            border-bottom: 3px solid #FF7F50;
+            padding-bottom: 15px;
+        }
+        .footer-links {
+            list-style: none;
+        }
+        .footer-links li {
+            margin-bottom: 15px;
+        }
+        .footer-links a {
+            color: #ccc;
+            text-decoration: none;
+            font-size: 16px;
+            transition: color 0.2s, transform 0.2s;
+            display: inline-block;
+        }
+        .footer-links a:hover {
+            color: #FF7F50;
+            transform: translateX(5px);
+        }
+        .footer-social {
+            display: flex;
+            gap: 20px;
+            margin-top: 20px;
+        }
+        .social-icon {
+            width: 50px;
+            height: 50px;
+            background-color: #444;
+            border: 3px solid #fff;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 3px 3px 0 #000;
+        }
+        .social-icon:hover {
+            background-color: #FF7F50;
+            transform: translateY(-5px);
+            box-shadow: 5px 5px 0 #000;
+        }
+        .copyright {
+            text-align: center;
+            font-size: 14px;
+            color: #999;
+            padding-top: 30px;
+            border-top: 1px solid #444;
+        }
+        /* 响应式适配（优化移动端体验） */
+        @media (max-width: 1280px) {
+            .container {
+                width: 1000px;
+            }
+        }
+        @media (max-width: 992px) {
+            .container {
+                width: 750px;
+            }
+            .features-grid, .game-grid, .package-grid, .footer-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .farmer-grid {
+                grid-template-columns: 1fr;
+            }
+            .hero-title {
+                font-size: 40px;
+            }
+            .hero-subtitle {
+                font-size: 18px;
+            }
+        }
+        @media (max-width: 768px) {
+            .container {
+                width: 100%;
+                padding: 0 20px;
+            }
+            .nav-menu {
+                display: none;
+            }
+            .search-box {
+                width: 180px;
+            }
+            .features-grid, .game-grid, .package-grid, .footer-grid, .farmer-stories {
+                grid-template-columns: 1fr;
+            }
+            .hero {
+                padding: 80px 20px;
+            }
+            .hero-title {
+                font-size: 32px;
+            }
+            .hero-btns {
+                gap: 20px;
+            }
+            .pixel-character {
+                display: none;
+            }
+            .section-title {
+                font-size: 28px;
+                margin: 60px 0 40px;
+            }
+            .footer-grid {
+                gap: 40px;
+            }
+        }
+        @media (max-width: 576px) {
+            .logo-text {
+                font-size: 22px;
+            }
+            .search-box {
+                display: none;
+            }
+            .hero-btns {
+                flex-direction: column;
+            }
+            .pixel-btn {
+                padding: 12px 24px;
+                font-size: 14px;
+            }
+            .package-tab {
+                padding: 10px 18px;
+                font-size: 16px;
+            }
+        }
+    </style>
+    <!-- 引入图标库与像素字体 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+</head>
+<body>
+    <!-- 导航栏（优化交互与视觉层级） -->
+    <nav class="navbar">
+        <div class="container">
+            <div class="logo">
+                <div class="logo-img">知食</div>
+                <div class="logo-text">知食物语</div>
+            </div>
+            <div class="nav-menu">
+                <div class="nav-item"><a href="#home">首页</a></div>
+                <div class="nav-item"><a href="#recipe">智能食谱</a></div>
+                <div class="nav-item"><a href="#market">像素超市</a></div>
+                <div class="nav-item"><a href="#farmer">助农专区</a></div>
+                <div class="nav-item"><a href="#mykitchen">我的厨房</a></div>
+                <div class="nav-item"><a href="#member">会员中心</a></div>
+            </div>
+            <div class="nav-tools">
+                <input type="text" class="search-box" placeholder="输入健康需求/食材，AI帮你配">
+                <div class="cart-icon">
+                    <<i class="fas fa-shopping-cart"></</i>
+                    <div class="cart-count">0</div>
+                </div>
+                <a href="#login" class="pixel-btn">登录/注册</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 英雄区（新增动态元素+视觉聚焦） -->
+    <section class="hero" id="home">
+        <div class="pixel-character character-left"></div>
+        <div class="pixel-character character-right"></div>
+        <div class="hero-tag-container">
+            <div class="hero-tag">支持减脂/增肌/控糖</div>
+            <div class="hero-tag">免洗免切·当日达</div>
+        </div>
+        <div class="hero-content">
+            <h1 class="hero-title">知食物语 · 让城市自炊更健康、更高效、更有趣</h1>
+            <p class="hero-subtitle">AI定制食谱+精准净菜+游戏化体验，一站式解决“吃什么、买什么、怎么备菜”，像玩游戏一样搞定健康饮食！</p>
+            <div class="hero-btns">
+                <a href="#recipe" class="pixel-btn">立即体验</a>
+                <a href="#package" class="pixel-btn pixel-btn--orange">59元首单体验</a>
+                <a href="#demo" class="pixel-btn pixel-btn--black">查看演示</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 核心功能区（优化卡片层级+统一视觉语言） -->
+    <section class="features" id="recipe">
+        <div class="container">
+            <h2 class="section-title">三大核心玩法，解锁健康饮食新体验</h2>
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <<i class="fas fa-robot" style="color: #7CCD7C;"></</i>
+                    </div>
+                    <h3 class="feature-title">AI智能营养师</h3>
+                    <p class="feature-desc">输入健康目标、口味偏好，AI生成专属食谱，一键购菜无需换算，支持减脂、痛风、备孕等场景化饮食管理。</p>
+                    <a href="#" class="pixel-btn">立即定制食谱</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <<i class="fas fa-shopping-basket" style="color: #FF7F50;"></</i>
+                    </div>
+                    <h3 class="feature-title">像素超市</h3>
+                    <p class="feature-desc">游戏化购物场景，虚拟角色挑选食材，真实配送到家，解锁季节限定食材图鉴，逛超市也能赢奖励。</p>
+                    <a href="#" class="pixel-btn">逛超市赢图鉴</a>
+                </div>
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <<i class="fas fa-utensils" style="color: #4169E1;"></</i>
+                    </div>
+                    <h3 class="feature-title">精准净菜+极速配送</h3>
+                    <p class="feature-desc">免洗、免切、按菜谱分装，与顺丰/美团配送合作，当日达/次日达，损耗率<5%，1.2亿+独居人群的选择。</p>
+                    <a href="#" class="pixel-btn">查看配送范围</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 助农专区（沉浸式场景+细节强化） -->
+    <section class="farmer" id="farmer">
+        <div class="container">
+            <div class="farmer-content">
+                <h2 class="section-title">助农专区 · 每一笔订单都在支持乡村振兴</h2>
+                <div class="farmer-banner">
+                    <h3 class="farmer-title">只做桥梁，不为盈利</h3>
+                    <p class="farmer-desc">价格透明公示，0平台服务费，让农民多赚钱，让消费者买得放心，把公益融入日常饮食消费</p>
+                </div>
+                <div class="farmer-grid">
+                    <div class="price-table">
+                        <table width="100%">
+                            <tr>
+                                <<th>商品</</th>
+                                <<th>农民收购价</</th>
+                                <<th>物流包装成本</</th>
+                                <<th>最终支付价</</th>
+                            </tr>
+                            <tr>
+                                <td>山东寿光番茄</td>
+                                <td>2.5元/份</td>
+                                <td>1.0元/份</td>
+                                <td>3.5元/份</td>
+                            </tr>
+                            <tr>
+                                <td>云南高山青菜</td>
+                                <td>3.0元/份</td>
+                                <td>1.2元/份</td>
+                                <td>4.2元/份</td>
+                            </tr>
+                            <tr>
+                                <td>陕西延安苹果</td>
+                                <td>5.0元/个</td>
+                                <td>1.5元/个</td>
+                                <td>6.5元/个</td>
+                            </tr>
+                            <tr>
+                                <td>四川有机水稻</td>
+                                <td>8.0元/斤</td>
+                                <td>2.0元/斤</td>
+                                <td>10.0元/斤</td>
+                            </tr>
+                        </table>
+                    </div>
+                    <div class="farmer-stories">
+                        <div class="farmer-story">
+                            <div class="farmer-avatar">李</div>
+                            <div class="farmer-story-content">
+                                <h4>云南李大叔 · 生态种植20年</h4>
+                                <p>坚持无农药种植，专注高山蔬菜，用自然的方式孕育健康食材，感谢每一份支持让大山里的蔬菜走出乡村！</p>
+                            </div>
+                        </div>
+                        <div class="farmer-story">
+                            <div class="farmer-avatar">张</div>
+                            <div class="farmer-story-content">
+                                <h4>山东张大姐 · 番茄种植大户</h4>
+                                <p>自家10亩大棚，番茄酸甜多汁，现摘现发，通过平台让更多人吃到新鲜本地菜，收入比往年提升30%+</p>
+                            </div>
+                        </div>
+                        <div class="farmer-story">
+                            <div class="farmer-avatar">王</div>
+                            <div class="farmer-story-content">
+                                <h4>陕西王大爷 · 苹果种植世家</h4>
+                                <p>祖辈传下来的果园，施有机肥，自然成熟，每颗苹果都饱含阳光的味道，平台帮我们解决了销路难题</p>
+                            </div>
+                        </div>
+                        <div class="farmer-story">
+                            <div class="farmer-avatar">刘</div>
+                            <div class="farmer-story-content">
+                                <h4>四川刘大哥 · 有机水稻种植</h4>
+                                <p>梯田种植，山泉水灌溉，不施化肥，产出的大米香糯可口，感谢平台让更多人认可我们的生态种植理念</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="farmer-cta">
+                    <a href="#" class="pixel-btn pixel-btn--orange" style="padding: 16px 32px; font-size: 18px;">逛助农专区，支持乡村振兴</a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 游戏化互动区（视觉强化+进度可视化） -->
+    <section class="game" id="mykitchen">
+        <div class="container">
+            <h2 class="section-title">边吃边玩，健康也能攒奖励</h2>
+            <div class="game-grid">
+                <div class="game-card">
+                    <h3 class="game-card-title">烹饪成就体系</h3>
+                    <div class="game-level">你的像素厨房等级：<span>1级（新手厨神）</span></div>
+                    <p class="progress-text">升级进度：距离2级需完成3次烹饪/1次助农订单</p>
+                    <div class="game-progress">
+                        <div class="progress-bar"></div>
+                    </div>
+                    <p style="font-size: 16px; margin: 30px 0 15px; color: #4a4a4a;">解锁装饰道具：</p>
+                    <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                        <div style="width: 50px; height: 50px; border: 3px solid #2d2d2d; border-radius: 4px; display: flex; align-items: center; justify-content: center; background-color: #e8f4f8; box-shadow: 3px 3px 0 #7CCD7C;">🌱</div>
+                        <div style="width: 50px; height: 50px; border: 3px dashed #999; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">🍳</div>
+                        <div style="width: 50px; height: 50px; border: 3px dashed #999; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">🥦</div>
+                        <div style="width: 50px; height: 50px; border: 3px dashed #999; border-radius: 4px; display: flex; align-items: center; justify-content: center; color: #999;">🍅</div>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <h3 class="game-card-title">主题挑战任务</h3>
+                    <div class="game-task">
+                        <div class="task-checkbox"></div>
+                        <span>一周健康挑战（打卡7天领50游戏货币）</span>
+                    </div>
+                    <div class="game-task">
+                        <div class="task-checkbox"></div>
+                        <span>清空冰箱计划（上传剩余食材得专属徽章）</span>
+                    </div>
+                    <div class="game-task">
+                        <div class="task-checkbox"></div>
+                        <span>助农公益任务（购买3份助农产品解锁限定道具）</span>
+                    </div>
+                    <div class="game-task">
+                        <div class="task-checkbox"></div>
+                        <span>食谱共创挑战（分享原创食谱赢营养师咨询）</span>
+                    </div>
+                    <div class="game-cta">
+                        <a href="#" class="pixel-btn pixel-btn--orange">立即参与挑战</a>
+                    </div>
+                </div>
+                <div class="game-card">
+                    <h3 class="game-card-title">食材图鉴收集</h3>
+                    <p style="font-size: 16px; margin-bottom: 20px; color: #4a4a4a; text-align: center;">季节限定食材图鉴（已收集3/12种）</p>
+                    <div class="album-grid">
+                        <div class="album-item unlocked">
+                            <div class="album-icon">🍅</div>
+                            <div class="album-name">番茄</div>
+                        </div>
+                        <div class="album-item unlocked">
+                            <div class="album-icon">🥬</div>
+                            <div class="album-name">青菜</div>
+                        </div>
+                        <div class="album-item unlocked">
+                            <div class="album-icon">🍎</div>
+                            <div class="album-name">苹果</div>
+                        </div>
+                        <div class="album-item locked">
+                            <div class="album-icon">🥕</div>
+                            <div class="album-name">胡萝卜</div>
+                        </div>
+                        <div class="album-item locked">
+                            <div class="album-icon">🥦</div>
+                            <div class="album-name">西兰花</div>
+                        </div>
+                        <div class="album-item locked">
+                            <div class="album-icon">🍚</div>
+                            <div class="album-name">大米</div>
+                        </div>
+                        <div class="album-item locked">
+                            <div class="album-icon">🥚</div>
+                            <div class="album-name">鸡蛋</div>
+                        </div>
+                        <div class="album-item locked">
+                            <div class="album-icon">🥩</div>
+                            <div class="album-name">瘦肉</div>
+                        </div>
+                    </div>
+                    <p style="font-size: 14px; color: #666; text-align: center;">集齐12种可解锁营养师1对1咨询服务</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 套餐推荐区（标签优化+卡片分层） -->
+    <section class="packages" id="package">
+        <div class="container">
+            <h2 class="section-title">热门套餐 · 精准匹配你的饮食需求</h2>
+            <div class="package-tabs">
+                <div class="package-tab active">健康管理型</div>
+                <div class="package-tab">效率驱动型</div>
+                <div class="package-tab">情感体验型</div>
+                <div class="package-tab">公益倾向型</div>
+            </div>
+            <div class="package-grid">
+                <div class="package-card">
+                    <div class="package-img">7日职场能量套餐（像素风菜品展示）</div>
+                    <h3 class="package-name">7日职场能量套餐</h3>
+                    <div class="package-tags">
+                        <div class="package-tag">AI定制</div>
+                        <div class="package-tag">均衡营养</div>
+                        <div class="package-tag">免洗免切</div>
+                    </div>
+                    <div class="package-price">299元</div>
+                    <a href="#" class="pixel-btn">立即购买</a>
+                </div>
+                <div class="package-card">
+                    <div class="package-img">减脂塑形专属套餐（像素风菜品展示）</div>
+                    <h3 class="package-name">减脂塑形专属套餐</h3>
+                    <div class="package-tags">
+                        <div class="package-tag">低卡高蛋白</div>
+                        <div class="package-tag">精准分量</div>
+                        <div class="package-tag">营养师认证</div>
+                    </div>
+                    <div class="package-price">199元/5餐</div>
+                    <a href="#" class="pixel-btn">立即购买</a>
+                </div>
+                <div class="package-card hot">
+                    <div class="package-img">新手体验包（像素风菜品展示）</div>
+                    <h3 class="package-name">新手体验包</h3>
+                    <div class="package-tags">
+                        <div class="package-tag">新用户专享</div>
+                        <div class="package-tag">1份净菜</div>
+                        <div class="package-tag">免配送费</div>
+                    </div>
+                    <div class="package-price">59元</div>
+                    <a href="#" class="pixel-btn pixel-btn--orange">限量抢购</a>
+                </div>
+            </div>
+            <div class="package-membership">
+                <p class="membership-desc">会员享9折优惠+免配送费，月费仅39元，解锁更多专属权益</p>
+                <a href="#member" class="pixel-btn">开通会员</a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 底部信息区（结构规整+视觉统一） -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-grid">
+                <div class="footer-col">
+                    <div class="footer-logo">
+                        <div class="footer-logo-img">知食</div>
+                        <div class="footer-logo-text">知食物语</div>
+                    </div>
+                    <p class="footer-desc">为都市自炊人群打造的游戏化智能健康饮食平台，像玩游戏一样，搞定健康饮食！融合AI定制、精准净菜、助农公益，让自炊更简单、更有趣、更有价值。</p>
+                    <div class="footer-social">
+                        <div class="social-icon"><<i class="fab fa-weixin"></</i></div>
+                        <div class="social-icon"><<i class="fab fa-weibo"></</i></div>
+                        <div class="social-icon"><<i class="fab fa-bilibili"></</i></div>
+                        <div class="social-icon"><<i class="fab fa-redhat"></</i></div>
+                    </div>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-title">功能导航</h4>
+                    <ul class="footer-links">
+                        <li><a href="#recipe">智能食谱</a></li>
+                        <li><a href="#market">像素超市</a></li>
+                        <li><a href="#farmer">助农专区</a></li>
+                        <li><a href="#mykitchen">我的厨房</a></li>
+                        <li><a href="#member">会员中心</a></li>
+                        <li><a href="#demo">功能演示</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-title">帮助中心</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">配送说明</a></li>
+                        <li><a href="#">售后政策</a></li>
+                        <li><a href="#">会员权益</a></li>
+                        <li><a href="#">常见问题</a></li>
+                        <li><a href="#">联系客服</a></li>
+                        <li><a href="#">食材溯源</a></li>
+                    </ul>
+                </div>
+                <div class="footer-col">
+                    <h4 class="footer-title">关于我们</h4>
+                    <ul class="footer-links">
+                        <li><a href="#">品牌介绍</a></li>
+                        <li><a href="#">合作伙伴</a></li>
+                        <li><a href="#">助农计划</a></li>
+                        <li><a href="#">招贤纳士</a></li>
+                        <li><a href="#">隐私政策</a></li>
+                        <li><a href="#">用户协议</a></li>
+                    </ul>
+                </div>
+            </div>
+            <div class="copyright">©2024 知食物语 保留所有权利 | 京ICP备12345678号 | 食品经营许可证：JY111010120000001</div>
+        </div>
+    </footer>
+
+    <!-- 交互JS（强化用户体验） -->
+    <script>
+        // 任务复选框交互
+        const checkboxes = document.querySelectorAll('.task-checkbox');
+        checkboxes.forEach(checkbox => {
+            checkbox.addEventListener('click', function() {
+                this.classList.toggle('task-checked');
+                if (this.classList.contains('task-checked')) {
+                    this.innerHTML = '✓';
+                    // 进度条同步更新
+                    const progressBar = document.querySelector('.progress-bar');
+                    const checkedCount = document.querySelectorAll('.task-checked').length;
+                    const totalCount = checkboxes.length;
+                    progressBar.style.width = `${(checkedCount / totalCount) * 100}%`;
+                } else {
+                    this.innerHTML = '';
+                    const progressBar = document.querySelector('.progress-bar');
+                    const checkedCount = document.querySelectorAll('.task-checked').length;
+                    const totalCount = checkboxes.length;
+                    progressBar.style.width = `${(checkedCount / totalCount) * 100}%`;
+                }
+            });
+        });
+
+        // 套餐标签切换
+        const tabs = document.querySelectorAll('.package-tab');
+        tabs.forEach(tab => {
+            tab.addEventListener('click', function() {
+                tabs.forEach(t => t.classList.remove('active'));
+                this.classList.add('active');
+                // 实际项目中可在此处添加套餐内容切换逻辑
+            });
+        });
+
+        // 平滑滚动
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                if (targetId === '#') return;
+                const targetElement = document.querySelector(targetId);
+                if (targetElement) {
+                    window.scrollTo({
+                        top: targetElement.offsetTop - 100,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+
+        // 页面滚动时导航栏样式变化
+        window.addEventListener('scroll', function() {
+            const navbar = document.querySelector('.navbar');
+            if (window.scrollY > 50) {
+                navbar.style.padding = '12px 0';
+                navbar.style.boxShadow = '0 6px 0 #e0e0e0';
+            } else {
+                navbar.style.padding = '18px 0';
+                navbar.style.boxShadow = '0 4px 0 #e0e0e0';
+            }
+        });
+
+        // 初始化进度条动画
+        window.addEventListener('load', function() {
+            const progressBar = document.querySelector('.progress-bar');
+            setTimeout(() => {
+                progressBar.style.width = '30%';
+            }, 500);
+        });
+    </script>
+</body>
+</html>
